@@ -3,6 +3,7 @@ import { visits, ailmentTreatments, patients } from '../db/schema';
 import { eq, and, desc, gt } from 'drizzle-orm';
 import { FollowupReport, Prescription } from '../../types/visit';
 import { Diagnosis } from '../../types/diagnosis';
+import { processVisit } from './pipeline';
 
 /**
  * Processes a follow-up report for a visit.
@@ -115,15 +116,34 @@ export async function processFollowup(
         });
         if (patient) {
           const chronic: string[] = JSON.parse(patient.chronicConditions || '[]');
+          let updatedChronic = [...chronic];
           if (!chronic.includes(diag.ailment_code)) {
-            chronic.push(diag.ailment_code);
-            await db.update(patients).set({
-              chronicConditions: JSON.stringify(chronic),
-            }).where(eq(patients.patientId, visit.patientId));
+            updatedChronic.push(diag.ailment_code);
           }
+          
+          await db.update(patients).set({
+            chronicConditions: JSON.stringify(updatedChronic),
+            needsManualReview: true, // Flag for operator attention
+          }).where(eq(patients.patientId, visit.patientId));
         }
       }
     }
+  }
+
+  // 5. Explicit Flag for Critical Severity
+  if (visit.severity && visit.severity >= 4) {
+    await db.update(patients).set({
+      needsManualReview: true
+    }).where(eq(patients.patientId, visit.patientId));
+  }
+
+  // 6. Automate new visit if symptoms persist
+  if (newState === 'UNRESOLVED') {
+    console.log(`[Followup] Symptoms persist for visit ${visitId}. Opening new visit...`);
+    await processVisit(visit.patientId, visit.symptomText, {
+      source_visit_id: visitId,
+      reason: 'Automated follow-up after unresolved treatment'
+    });
   }
 
   return await db.query.visits.findFirst({

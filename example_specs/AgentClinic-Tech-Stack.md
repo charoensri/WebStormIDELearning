@@ -964,7 +964,8 @@ agentclinic/
 ├── drizzle/
 │   └── migrations/                             # Auto-generated migration SQL files
 ├── data/
-│   └── agentclinic.db                          # SQLite database (gitignored)
+│   └── agentclinic.db                          # SQLi
+te database (gitignored)
 ├── drizzle.config.ts                           # Drizzle Kit config (SQLite driver, schema path)
 ├── next.config.js
 ├── package.json

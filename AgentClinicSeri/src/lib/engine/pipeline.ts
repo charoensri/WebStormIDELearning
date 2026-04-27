@@ -1,6 +1,6 @@
 import { db } from '../db';
 import { patients, visits, ailments, treatments, ailmentTreatments } from '../db/schema';
-import { eq, desc, and } from 'drizzle-orm';
+import { eq, desc, and, gt } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { runTriageAndDiagnosis } from './triage-diagnosis';
 import { runPrescription } from './prescription';
@@ -84,7 +84,29 @@ export async function processVisit(patientId: string, symptomText: string, metad
     updatedAt: new Date().toISOString(),
   }).where(eq(visits.visitId, visitId));
 
-  // 5. Prepare Treatment Candidates
+  // 5. Check for Recurrence
+  let hasRecurrence = false;
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  const pastVisits = await db.query.visits.findMany({
+    where: and(
+      eq(visits.patientId, patientId),
+      gt(visits.createdAt, thirtyDaysAgo)
+    ),
+  });
+
+  for (const diag of finalDiagnoses) {
+    const previousOccurrences = pastVisits.filter(v => {
+      if (v.visitId === visitId) return false;
+      const vDiags: Diagnosis[] = v.diagnoses ? JSON.parse(v.diagnoses) : [];
+      return vDiags.some(d => d.ailment_code === diag.ailment_code);
+    });
+    if (previousOccurrences.length > 0) {
+      hasRecurrence = true;
+      break;
+    }
+  }
+
+  // 6. Prepare Treatment Candidates
   let treatmentCandidatesText = '';
   for (const diag of finalDiagnoses) {
     const ts = await db.select().from(ailmentTreatments)
@@ -119,9 +141,28 @@ export async function processVisit(patientId: string, symptomText: string, metad
       referral: rx.referral,
       referral_reason: rx.referral_reason,
     });
+
+    // Update Prescription Count
+    if (rx.treatment_code && !rx.deferred && !rx.referral) {
+      const mapping = await db.query.ailmentTreatments.findFirst({
+        where: and(
+          eq(ailmentTreatments.ailmentCode, rx.ailment_code),
+          eq(ailmentTreatments.treatmentCode, rx.treatment_code)
+        )
+      });
+      if (mapping) {
+        await db.update(ailmentTreatments).set({
+          totalPrescribed: (mapping.totalPrescribed || 0) + 1,
+          lastUpdated: now
+        }).where(and(
+          eq(ailmentTreatments.ailmentCode, rx.ailment_code),
+          eq(ailmentTreatments.treatmentCode, rx.treatment_code)
+        ));
+      }
+    }
   }
 
-  // 7. Finalize
+  // 8. Finalize
   const followupWindow = Number(process.env.FOLLOWUP_WINDOW_HOURS || 72);
   const followupDue = new Date(Date.now() + followupWindow * 60 * 60 * 1000).toISOString();
 
@@ -129,6 +170,7 @@ export async function processVisit(patientId: string, symptomText: string, metad
     state: 'AWAITING_FOLLOWUP',
     prescriptions: JSON.stringify(finalPrescriptions),
     followupDue,
+    recurrenceFlag: hasRecurrence,
     updatedAt: new Date().toISOString(),
   }).where(eq(visits.visitId, visitId));
 

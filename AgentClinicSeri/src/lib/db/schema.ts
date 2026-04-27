@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, real, primaryKey } from 'drizzle-orm/sqlite-core';
 
 /**
  * Patients Table: Agents with persistent identity and medical history.
@@ -16,6 +16,7 @@ export const patients = sqliteTable('patients', {
   lastVisit: text('last_visit'), // ISO 8601
   visitCount: integer('visit_count').default(0),
   chronicConditions: text('chronic_conditions').default('[]'), // JSON array of ailment codes
+  needsManualReview: integer('needs_manual_review', { mode: 'boolean' }).default(false),
   status: text('status', { enum: ['active', 'discharged', 'suspended'] }).default('active'),
 });
 
@@ -78,4 +79,6 @@ export const ailmentTreatments = sqliteTable('ailment_treatments', {
   totalExpired: integer('total_expired').default(0),
   effectivenessScore: real('effectiveness_score'), // Null until 5+ outcomes
   lastUpdated: text('last_updated'), // ISO 8601
-});
+}, (table) => ({
+  pk: primaryKey({ columns: [table.ailmentCode, table.treatmentCode] }),
+}));

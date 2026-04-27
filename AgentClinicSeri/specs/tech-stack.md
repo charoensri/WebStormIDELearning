@@ -1,43 +1,42 @@
 # Tech Stack
 
-AgentClinic is a server-side TypeScript application. All rendering happens on the server; the browser receives plain HTML that works well and looks good.
+AgentClinic is a high-performance, server-side TypeScript application. It leverages modern tooling to provide a rich, interactive dashboard with minimal client-side overhead.
 
 ## Core
 
 | Layer | Choice | Rationale |
 |---|---|---|
-| Language | TypeScript | Type safety end-to-end; satisfies Mary's requirement |
-| Runtime | Node.js | Stable, well-supported, vast ecosystem |
-| Server framework | **Hono** | Lightweight, TypeScript-first, fast, excellent DX; routes and middleware feel natural |
-| Templating | Hono JSX (server-side) | JSX without React overhead; components are just functions |
-| CSS | Plain CSS + CSS custom properties | No build step required; Steve gets a modern, attractive result |
+| Language | **TypeScript** | Strict type safety across the clinical engine and UI. |
+| Runtime | **Node.js** | Reliable industry standard for the backend. |
+| Server framework | **Hono** | Lightweight, high-performance, and TypeScript-native. |
+| Templating | **Hono JSX** | Server-side rendering for fast initial loads and SEO. |
+| Database | **SQLite** | Embedded database via `better-sqlite3` for local speed and simplicity. |
+| ORM | **Drizzle ORM** | Type-safe SQL builder and schema management; keeps data access predictable. |
 
-## Recommended: Hono
+## Specialized Features
 
-[Hono](https://hono.dev) is chosen over Express/Fastify because:
+- **LLM Engine**: Integration with **Ollama** (or similar providers) for automated triage, diagnosis, and prescription rationale.
+- **Real-time Updates**: **Server-Sent Events (SSE)** for instant dashboard refreshes when new visits occur or patients register.
+- **Analytics**: **ApexCharts** for rendering clinical heatmaps and severity trends.
+- **Background Jobs**: Custom background worker for processing follow-ups and system maintenance.
 
-- First-class TypeScript with zero config
-- Built-in JSX renderer for server-side HTML
-- Middleware model is simple and composable
-- Runs on Node, Deno, Bun, and edge runtimes without changes
+## Data & Migrations
 
-## Data
-
-- **SQLite** (via `better-sqlite3`) for local development and early production — simple, embedded, no infrastructure
-- Migrations via plain SQL files; no ORM to start
+- **Drizzle Kit**: Used for schema definitions and managing database migrations.
+- **Seeding**: Custom seed scripts to populate fictional agent patients and clinical catalogs.
 
 ## Testing
 
-- **Vitest** — fast, TypeScript-native, compatible with the rest of the stack
+- **Python Integration Tests**: Using `requests` to validate the REST API and the LLM diagnostic pipeline.
+- **Manual Verification**: End-to-end clinical workflow validation via the Staff Dashboard.
 
 ## Tooling
 
-- `tsx` for development (run TypeScript directly, no build step needed)
-- `tsc` for production builds
-- `prettier` for formatting
+- `tsx`: Development runner with instant watch-mode reloading.
+- `drizzle-kit`: For database schema push and migrations.
+- `dotenv`: Configuration management for API keys and environment variables.
 
 ## What We Are Not Using
 
-- No React, Vue, or Svelte — server-side rendering keeps the stack simple
-- No ORM — SQL is sufficient at this scale
-- No Docker — not yet; that's a later phase concern
+- **No heavy SPAs**: No React/Vue/Angular on the client; Hono JSX handles the UI logic.
+- **No heavy CSS frameworks**: Vanilla CSS provides a clean, fast UI without the bloat of Tailwind or Bootstrap.
