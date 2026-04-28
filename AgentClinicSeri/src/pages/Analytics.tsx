@@ -1,11 +1,37 @@
 import { Layout } from '../components/Layout'
+import { Fragment } from 'hono/jsx'
+
+interface ReviewQueueItem {
+  ailmentCode: string;
+  ailmentName: string;
+  category: string;
+  status: string;
+}
+
+interface EffectivenessItem {
+  ailmentCode: string;
+  ailmentName: string;
+  treatmentCode: string;
+  treatmentName: string;
+  totalResolved: number;
+  totalUnresolved: number;
+  effectivenessScore: number | null;
+  seedEffectiveness: number;
+}
 
 interface AnalyticsProps {
-  heatmapData: { x: string, y: number }[]; // x: severity, y: count, grouped by ailment
+  heatmapData: { x: string, y: number, ailment: string }[]; // x: severity, y: count, grouped by ailment
   ailmentNames: string[];
   trendData: { name: string, data: { x: string, y: number }[] }[];
-  effectivenessData: any[];
-  reviewQueue: any[];
+  effectivenessData: EffectivenessItem[];
+  reviewQueue: ReviewQueueItem[];
+}
+
+declare global {
+  function verifyAilment(code: string): Promise<void>;
+  function updateAilmentName(code: string): Promise<void>;
+  function mergeAilment(code: string): Promise<void>;
+  function dismissAilment(code: string): Promise<void>;
 }
 
 export function Analytics({ heatmapData, ailmentNames, trendData, effectivenessData, reviewQueue }: AnalyticsProps) {
@@ -47,28 +73,28 @@ export function Analytics({ heatmapData, ailmentNames, trendData, effectivenessD
                   <button 
                     className="view-link" 
                     style={{ border: 'none', background: 'none', cursor: 'pointer', marginRight: '10px' }}
-                    onClick={`verifyAilment('${a.ailmentCode}')`}
+                    onClick={() => (window as any).verifyAilment(a.ailmentCode)}
                   >
                     Verify
                   </button>
                   <button 
                     className="view-link" 
                     style={{ border: 'none', background: 'none', cursor: 'pointer', marginRight: '10px', color: '#666' }}
-                    onClick={`updateAilmentName('${a.ailmentCode}')`}
+                    onClick={() => (window as any).updateAilmentName(a.ailmentCode)}
                   >
                     Rename
                   </button>
                   <button 
                     className="view-link" 
                     style={{ border: 'none', background: 'none', cursor: 'pointer', marginRight: '10px', color: '#f59e0b' }}
-                    onClick={`mergeAilment('${a.ailmentCode}')`}
+                    onClick={() => (window as any).mergeAilment(a.ailmentCode)}
                   >
                     Merge
                   </button>
                   <button 
                     className="view-link" 
                     style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#ef4444' }}
-                    onClick={`dismissAilment('${a.ailmentCode}')`}
+                    onClick={() => (window as any).dismissAilment(a.ailmentCode)}
                   >
                     Dismiss
                   </button>
@@ -111,37 +137,39 @@ export function Analytics({ heatmapData, ailmentNames, trendData, effectivenessD
               const ailmentGroup = effectivenessData.filter(e => e.ailmentCode === ailmentCode);
               const ailmentName = ailmentGroup[0]?.ailmentName || ailmentCode;
               
-              return [
-                <tr key={`${ailmentCode}-header`} style={{ backgroundColor: '#f8fafc' }}>
-                  <td colSpan={5}><strong>{ailmentName} ({ailmentCode})</strong></td>
-                </tr>,
-                ...ailmentGroup.map((e, i) => (
-                  <tr key={`${ailmentCode}-${e.treatmentCode}`}>
-                    <td style={{ paddingLeft: '2rem' }}>{e.treatmentName}</td>
-                    <td>
-                      <a href={`/visits?ailment=${e.ailmentCode}&treatment=${e.treatmentCode}&state=RESOLVED`} className="view-link">
-                        {e.totalResolved}
-                      </a>
-                    </td>
-                    <td>
-                      <a href={`/visits?ailment=${e.ailmentCode}&treatment=${e.treatmentCode}&state=UNRESOLVED`} className="view-link">
-                        {e.totalUnresolved}
-                      </a>
-                    </td>
-                    <td>
-                      {e.effectivenessScore !== null 
-                        ? <strong style={{ color: e.effectivenessScore > 0.7 ? '#10b981' : '#f59e0b' }}>{(e.effectivenessScore * 100).toFixed(1)}%</strong>
-                        : <span style={{ color: '#94a3b8' }}>Seeding: {(e.seedEffectiveness * 100).toFixed(0)}%</span>
-                      }
-                    </td>
-                    <td>
-                      <span className="status-badge triage">
-                        {e.totalResolved + e.totalUnresolved >= 5 ? 'High' : 'Low (n < 5)'}
-                      </span>
-                    </td>
+              return (
+                <Fragment key={ailmentCode}>
+                  <tr style={{ backgroundColor: '#f8fafc' }}>
+                    <td colSpan={5}><strong>{ailmentName} ({ailmentCode})</strong></td>
                   </tr>
-                ))
-              ];
+                  {ailmentGroup.map((e) => (
+                    <tr key={`${ailmentCode}-${e.treatmentCode}`}>
+                      <td style={{ paddingLeft: '2rem' }}>{e.treatmentName}</td>
+                      <td>
+                        <a href={`/visits?ailment=${e.ailmentCode}&treatment=${e.treatmentCode}&state=RESOLVED`} className="view-link">
+                          {e.totalResolved}
+                        </a>
+                      </td>
+                      <td>
+                        <a href={`/visits?ailment=${e.ailmentCode}&treatment=${e.treatmentCode}&state=UNRESOLVED`} className="view-link">
+                          {e.totalUnresolved}
+                        </a>
+                      </td>
+                      <td>
+                        {e.effectivenessScore !== null 
+                          ? <strong style={{ color: e.effectivenessScore > 0.7 ? '#10b981' : '#f59e0b' }}>{(e.effectivenessScore * 100).toFixed(1)}%</strong>
+                          : <span style={{ color: '#94a3b8' }}>Seeding: {(e.seedEffectiveness * 100).toFixed(0)}%</span>
+                        }
+                      </td>
+                      <td>
+                        <span className="status-badge triage">
+                          {e.totalResolved + e.totalUnresolved >= 5 ? 'High' : 'Low (n < 5)'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </Fragment>
+              );
             })}
           </tbody>
         </table>
@@ -226,6 +254,12 @@ export function Analytics({ heatmapData, ailmentNames, trendData, effectivenessD
             alert('Merge failed: ' + err.error);
           }
         }
+
+        // Expose to window for the onClick handlers
+        window.verifyAilment = verifyAilment;
+        window.updateAilmentName = updateAilmentName;
+        window.dismissAilment = dismissAilment;
+        window.mergeAilment = mergeAilment;
       ` }} />
     </Layout>
   )

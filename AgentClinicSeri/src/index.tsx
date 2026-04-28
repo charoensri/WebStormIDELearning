@@ -675,8 +675,10 @@ app.get('/api/patients/:id/history', async (c) => {
 // Start a Visit
 app.get('/api/events', (c) => {
   return stream(c, async (stream) => {
+    let isAborted = false;
     stream.onAbort(() => {
       console.log('[SSE] Client disconnected');
+      isAborted = true;
     });
 
     // Set headers for SSE
@@ -696,14 +698,12 @@ app.get('/api/events', (c) => {
     }, 30000);
 
     // Stay connected indefinitely until aborted
-    while (true) {
+    while (!isAborted) {
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      if (stream.aborted) {
-        clearInterval(heartbeat);
-        eventBus.off('message', listener);
-        break;
-      }
     }
+
+    clearInterval(heartbeat);
+    eventBus.off('message', listener);
   });
 });
 
