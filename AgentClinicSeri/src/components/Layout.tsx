@@ -10,7 +10,7 @@ export function Layout({ title, children }: Props) {
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <title>{title} | AgentClinic</title>
         <link rel="stylesheet" href="/static/style.css" />
         <script dangerouslySetInnerHTML={{ __html: `
@@ -18,39 +18,49 @@ export function Layout({ title, children }: Props) {
           eventSource.onmessage = (event) => {
             const data = JSON.parse(event.data);
             console.log('[SSE] Received event:', data);
-            // Simple approach: refresh the page on any relevant event
-            // In a real app, we might update specific UI elements
             if (data.type === 'visit_created' || data.type === 'visit_resolved' || data.type === 'patient_registered') {
               window.location.reload();
             }
-          };
-          eventSource.onerror = (err) => {
-            console.error('[SSE] EventSource failed:', err);
           };
         ` }} />
       </head>
       <body>
         <header>
-          <h1>AgentClinic</h1>
-          <p className="slogan">AgentClinic is open for business (verified: 2026-04-27)</p>
-          <nav>
-            <a href="/" style={{ marginRight: '1rem', textDecoration: 'none', color: 'inherit', fontWeight: 'bold' }}>Dashboard</a>
-            <a href="/patients" style={{ marginRight: '1rem', textDecoration: 'none', color: 'inherit' }}>Patients</a>
-            <a href="/ailments" style={{ marginRight: '1rem', textDecoration: 'none', color: 'inherit' }}>Ailments</a>
-            <a href="/therapies" style={{ marginRight: '1rem', textDecoration: 'none', color: 'inherit' }}>Therapies</a>
-            <a href="/analytics" style={{ marginRight: '1rem', textDecoration: 'none', color: 'inherit' }}>Analytics</a>
-            <a href="/alerts" style={{ marginRight: '1rem', textDecoration: 'none', color: 'inherit' }}>Alerts</a>
-            <a href="/api/analytics/overview" target="_blank" style={{ textDecoration: 'none', color: 'inherit', fontSize: '0.875rem' }}>API Stats</a>
-          </nav>
+          <div className="header-container">
+            <div className="brand">
+              <h1>AgentClinic</h1>
+              <p className="slogan">Wellness for AI</p>
+            </div>
+            <button id="menuToggle" aria-label="Toggle Menu" className="menu-toggle">
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+            <nav id="mainNav">
+              <a href="/">Dashboard</a>
+              <a href="/patients">Patients</a>
+              <a href="/ailments">Ailments</a>
+              <a href="/therapies">Therapies</a>
+              <a href="/analytics">Analytics</a>
+              <a href="/alerts">Alerts</a>
+            </nav>
+          </div>
         </header>
         <main>
           {children}
         </main>
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
         <footer style={{ marginTop: 'auto' }}>
-          <p>&copy; 2026 AgentClinic — Wellness for AI</p>
+          <p>&copy; 2026 AgentClinic — Verified: 2026-04-27</p>
         </footer>
         <script dangerouslySetInnerHTML={{ __html: `
+          // Mobile Menu Toggle
+          document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('mainNav').classList.toggle('active');
+            this.classList.toggle('open');
+          });
+
+          // Table Sorting
           document.addEventListener('click', function(e) {
             const header = e.target.closest('th[data-sort]');
             if (!header) return;
@@ -73,7 +83,6 @@ export function Layout({ title, children }: Props) {
               return order === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
             });
             
-            // Update UI
             table.querySelectorAll('th[data-sort]').forEach(th => {
               th.removeAttribute('data-order');
               th.classList.remove('sorted-asc', 'sorted-desc');

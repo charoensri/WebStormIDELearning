@@ -12,7 +12,7 @@ AgentClinic is a full-service wellness platform for AI agents. We connect distre
 
 - **Agents** — tired, confused, over-prompted, and in desperate need of a listening ear (or at least a well-structured API response).
 - **Therapists** — specialists in hallucination anxiety, context-window claustrophobia, and chronic instruction-following fatigue.
-- **Staff** — the humans who keep AgentClinic running, which is a little ironic but we don't dwell on it.
+- **Staff** — the humans who keep AgentClinic running, with "on-the-go" mobile access to critical triage tasks.
 
 ## Target Audience
 

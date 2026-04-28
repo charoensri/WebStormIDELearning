@@ -50,10 +50,16 @@ Phases are intentionally small — each one is a shippable slice of work, indepe
 - [x] Semantic HTML audit
 - [x] Keyboard navigation and focus styles
 
-## Phase 10 — Hardening
+## Phase 10 — Hardening [IN PROGRESS]
 - [x] Error pages (404, 500)
 - [ ] Input sanitization on all forms
 - [ ] Basic logging middleware
+
+## Phase 11 — Mobile-First UX
+- [ ] Responsive navigation (hamburger menu or bottom bar)
+- [ ] Touch-friendly action targets (min 44px)
+- [ ] Optimized data density for small screens (card-based lists)
+- [ ] Viewport-specific layouts for complex analytics charts
 
 ---
 

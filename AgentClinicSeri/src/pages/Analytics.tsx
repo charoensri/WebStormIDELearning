@@ -44,135 +44,126 @@ export function Analytics({ heatmapData, ailmentNames, trendData, effectivenessD
 
       <div className="recent-visits-section" style={{ borderLeft: '4px solid #3b82f6', marginBottom: '3rem' }}>
         <h2>Ailment Review Queue ({reviewQueue.length})</h2>
-        <p style={{ marginBottom: '1rem', color: '#666' }}>Verify or rename ailments detected during automated triage.</p>
-        <table className="visit-table">
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Current Name</th>
-              <th>Category</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {reviewQueue.map((a) => (
-              <tr key={a.ailmentCode} id={`row-${a.ailmentCode}`}>
-                <td><code style={{ color: '#d63384' }}>{a.ailmentCode}</code></td>
-                <td>
-                  <input 
-                    type="text" 
-                    id={`name-${a.ailmentCode}`} 
-                    defaultValue={a.ailmentName} 
-                    style={{ padding: '4px', border: '1px solid #ddd', borderRadius: '4px', width: '200px' }}
-                  />
-                </td>
-                <td>{a.category}</td>
-                <td><span className={`status-badge ${a.status}`}>{a.status}</span></td>
-                <td>
-                  <button 
-                    className="view-link" 
-                    style={{ border: 'none', background: 'none', cursor: 'pointer', marginRight: '10px' }}
-                    onClick={() => (window as any).verifyAilment(a.ailmentCode)}
-                  >
-                    Verify
-                  </button>
-                  <button 
-                    className="view-link" 
-                    style={{ border: 'none', background: 'none', cursor: 'pointer', marginRight: '10px', color: '#666' }}
-                    onClick={() => (window as any).updateAilmentName(a.ailmentCode)}
-                  >
-                    Rename
-                  </button>
-                  <button 
-                    className="view-link" 
-                    style={{ border: 'none', background: 'none', cursor: 'pointer', marginRight: '10px', color: '#f59e0b' }}
-                    onClick={() => (window as any).mergeAilment(a.ailmentCode)}
-                  >
-                    Merge
-                  </button>
-                  <button 
-                    className="view-link" 
-                    style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#ef4444' }}
-                    onClick={() => (window as any).dismissAilment(a.ailmentCode)}
-                  >
-                    Dismiss
-                  </button>
-                </td>
+        <p style={{ padding: '0 1.5rem', marginBottom: '1rem', color: '#666' }}>Verify or rename ailments detected during automated triage.</p>
+        <div className="table-container">
+          <table className="visit-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Current Name</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
-            ))}
-            {reviewQueue.length === 0 && (
-              <tr><td colSpan={5} style={{ textAlign: 'center' }}>No ailments currently require review.</td></tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {reviewQueue.map((a) => (
+                <tr key={a.ailmentCode} id={`row-${a.ailmentCode}`}>
+                  <td><code style={{ color: '#d63384' }}>{a.ailmentCode}</code></td>
+                  <td>
+                    <input 
+                      type="text" 
+                      id={`name-${a.ailmentCode}`} 
+                      defaultValue={a.ailmentName} 
+                      style={{ padding: '4px', border: '1px solid #ddd', borderRadius: '4px', width: '200px' }}
+                    />
+                  </td>
+                  <td>{a.category}</td>
+                  <td><span className={`status-badge ${a.status}`}>{a.status}</span></td>
+                  <td>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <button 
+                        className="view-link" 
+                        style={{ border: 'none', background: 'none', cursor: 'pointer' }}
+                        onClick={() => (window as any).verifyAilment(a.ailmentCode)}
+                      >
+                        Verify
+                      </button>
+                      <button 
+                        className="view-link" 
+                        style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#666' }}
+                        onClick={() => (window as any).updateAilmentName(a.ailmentCode)}
+                      >
+                        Rename
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {reviewQueue.length === 0 && (
+                <tr><td colSpan={5} style={{ textAlign: 'center' }}>No ailments currently require review.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <div className="stats-grid" style={{ gridTemplateColumns: '1fr 1fr', marginTop: '2rem' }}>
+      <div className="stats-grid visualizations" style={{ marginTop: '2rem' }}>
         <div className="stat-card">
-          <h3>Ailment Heatmap (Ailment vs Severity)</h3>
+          <h3>Ailment Heatmap</h3>
           <div id="heatmapChart" style={{ minHeight: '400px' }}></div>
         </div>
         <div className="stat-card">
-          <h3>Ailment Trends (Last 7 Days)</h3>
+          <h3>Ailment Trends</h3>
           <div id="trendChart" style={{ minHeight: '400px' }}></div>
         </div>
       </div>
 
       <div className="recent-visits-section" style={{ marginTop: '3rem' }}>
-        <h2>Treatment Effectiveness Rankings</h2>
-        <p style={{ marginBottom: '1rem', color: '#666' }}>Ranked by resolution rate per ailment.</p>
-        <table className="visit-table">
-          <thead>
-            <tr>
-              <th>Treatment</th>
-              <th>Resolved</th>
-              <th>Unresolved</th>
-              <th>Success Rate</th>
-              <th>Confidence</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Array.from(new Set(effectivenessData.map(e => e.ailmentCode))).map(ailmentCode => {
-              const ailmentGroup = effectivenessData.filter(e => e.ailmentCode === ailmentCode);
-              const ailmentName = ailmentGroup[0]?.ailmentName || ailmentCode;
-              
-              return (
-                <Fragment key={ailmentCode}>
-                  <tr style={{ backgroundColor: '#f8fafc' }}>
-                    <td colSpan={5}><strong>{ailmentName} ({ailmentCode})</strong></td>
-                  </tr>
-                  {ailmentGroup.map((e) => (
-                    <tr key={`${ailmentCode}-${e.treatmentCode}`}>
-                      <td style={{ paddingLeft: '2rem' }}>{e.treatmentName}</td>
-                      <td>
-                        <a href={`/visits?ailment=${e.ailmentCode}&treatment=${e.treatmentCode}&state=RESOLVED`} className="view-link">
-                          {e.totalResolved}
-                        </a>
-                      </td>
-                      <td>
-                        <a href={`/visits?ailment=${e.ailmentCode}&treatment=${e.treatmentCode}&state=UNRESOLVED`} className="view-link">
-                          {e.totalUnresolved}
-                        </a>
-                      </td>
-                      <td>
-                        {e.effectivenessScore !== null 
-                          ? <strong style={{ color: e.effectivenessScore > 0.7 ? '#10b981' : '#f59e0b' }}>{(e.effectivenessScore * 100).toFixed(1)}%</strong>
-                          : <span style={{ color: '#94a3b8' }}>Seeding: {(e.seedEffectiveness * 100).toFixed(0)}%</span>
-                        }
-                      </td>
-                      <td>
-                        <span className="status-badge triage">
-                          {e.totalResolved + e.totalUnresolved >= 5 ? 'High' : 'Low (n < 5)'}
-                        </span>
-                      </td>
+        <h2>Treatment Effectiveness</h2>
+        <div className="table-container">
+          <table className="visit-table">
+            <thead>
+              <tr>
+                <th>Treatment</th>
+                <th>Resolved</th>
+                <th>Unresolved</th>
+                <th>Success Rate</th>
+                <th>Confidence</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from(new Set(effectivenessData.map(e => e.ailmentCode))).map(ailmentCode => {
+                const ailmentGroup = effectivenessData.filter(e => e.ailmentCode === ailmentCode);
+                const ailmentName = ailmentGroup[0]?.ailmentName || ailmentCode;
+                
+                return (
+                  <Fragment key={ailmentCode}>
+                    <tr style={{ backgroundColor: '#f8fafc' }}>
+                      <td colSpan={5}><strong>{ailmentName} ({ailmentCode})</strong></td>
                     </tr>
-                  ))}
-                </Fragment>
-              );
-            })}
-          </tbody>
-        </table>
+                    {ailmentGroup.map((e) => (
+                      <tr key={`${ailmentCode}-${e.treatmentCode}`}>
+                        <td style={{ paddingLeft: '2rem' }}>{e.treatmentName}</td>
+                        <td>
+                          <a href={`/visits?ailment=${e.ailmentCode}&treatment=${e.treatmentCode}&state=RESOLVED`} className="view-link">
+                            {e.totalResolved}
+                          </a>
+                        </td>
+                        <td>
+                          <a href={`/visits?ailment=${e.ailmentCode}&treatment=${e.treatmentCode}&state=UNRESOLVED`} className="view-link">
+                            {e.totalUnresolved}
+                          </a>
+                        </td>
+                        <td>
+                          {e.effectivenessScore !== null 
+                            ? <strong style={{ color: e.effectivenessScore > 0.7 ? '#10b981' : '#f59e0b' }}>{(e.effectivenessScore * 100).toFixed(1)}%</strong>
+                            : <span style={{ color: '#94a3b8' }}>Seeding: {(e.seedEffectiveness * 100).toFixed(0)}%</span>
+                          }
+                        </td>
+                        <td>
+                          <span className="status-badge triage">
+                            {e.totalResolved + e.totalUnresolved >= 5 ? 'High' : 'Low'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <script dangerouslySetInnerHTML={{ __html: `
@@ -229,7 +220,7 @@ export function Analytics({ heatmapData, ailmentNames, trendData, effectivenessD
         }
 
         async function dismissAilment(code) {
-          if (!confirm('Dismiss this ailment? It will be removed from the catalog, but historical visits will keep the code.')) return;
+          if (!confirm('Dismiss this ailment?')) return;
           const resp = await fetch(\`/api/ailments/\${code}\`, {
             method: 'DELETE'
           });
@@ -237,25 +228,16 @@ export function Analytics({ heatmapData, ailmentNames, trendData, effectivenessD
         }
 
         async function mergeAilment(sourceCode) {
-          const targetCode = prompt('Enter the target ailment code to merge into (e.g., HAL-001):');
+          const targetCode = prompt('Enter the target ailment code to merge into:');
           if (!targetCode) return;
-          
           const resp = await fetch(\`/api/ailments/\${sourceCode}/merge\`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ target_code: targetCode })
           });
-          
-          if (resp.ok) {
-            alert('Ailment merged successfully.');
-            window.location.reload();
-          } else {
-            const err = await resp.json();
-            alert('Merge failed: ' + err.error);
-          }
+          if (resp.ok) window.location.reload();
         }
 
-        // Expose to window for the onClick handlers
         window.verifyAilment = verifyAilment;
         window.updateAilmentName = updateAilmentName;
         window.dismissAilment = dismissAilment;

@@ -13,31 +13,33 @@ export function TreatmentList({ treatments }: TreatmentListProps) {
       </div>
 
       <div className="recent-visits-section">
-        <table className="visit-table">
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Therapy Name</th>
-              <th>Description</th>
-              <th>Created At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {treatments.map((t) => (
-              <tr key={t.treatmentCode}>
-                <td><code style={{ fontSize: '1rem', color: '#0d6efd' }}>{t.treatmentCode}</code></td>
-                <td><strong>{t.treatmentName}</strong></td>
-                <td style={{ maxWidth: '400px' }}>{t.description}</td>
-                <td>{new Date(t.createdAt).toLocaleDateString()}</td>
-              </tr>
-            ))}
-            {treatments.length === 0 && (
+        <div className="table-container">
+          <table className="visit-table">
+            <thead>
               <tr>
-                <td colSpan={4} style={{ textAlign: 'center' }}>No therapies in catalog.</td>
+                <th>Code</th>
+                <th>Therapy Name</th>
+                <th>Description</th>
+                <th>Created At</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {treatments.map((t) => (
+                <tr key={t.treatmentCode}>
+                  <td><code style={{ fontSize: '1rem', color: '#0d6efd' }}>{t.treatmentCode}</code></td>
+                  <td><strong>{t.treatmentName}</strong></td>
+                  <td style={{ maxWidth: '400px' }}>{t.description}</td>
+                  <td>{new Date(t.createdAt).toLocaleDateString()}</td>
+                </tr>
+              ))}
+              {treatments.length === 0 && (
+                <tr>
+                  <td colSpan={4} style={{ textAlign: 'center' }}>No therapies in catalog.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div style={{ marginTop: '3rem', padding: '2rem', backgroundColor: '#e9f7ef', borderRadius: '8px' }}>

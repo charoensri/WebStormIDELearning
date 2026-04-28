@@ -11,11 +11,11 @@ export function PatientDetail({ patient, visits }: PatientDetailProps) {
   return (
     <Layout title={`Patient: ${patient.agentName}`}>
       <div className="dashboard-header">
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem' }}>
-          <h1>{patient.agentName}</h1>
+        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <h1 style={{ margin: 0 }}>{patient.agentName}</h1>
           <span className={`status-badge ${patient.status}`}>{patient.status}</span>
         </div>
-        <p style={{ color: '#666' }}>Patient ID: {patient.patientId}</p>
+        <p style={{ color: '#666', marginTop: '0.5rem', wordBreak: 'break-all' }}>Patient ID: {patient.patientId}</p>
       </div>
 
       <div className="stats-grid">
@@ -39,7 +39,7 @@ export function PatientDetail({ patient, visits }: PatientDetailProps) {
 
       <div style={{ marginTop: '2rem' }}>
         <h3>Chronic Conditions</h3>
-        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
           {chronicConditions.length > 0 ? (
             chronicConditions.map((c: string) => (
               <span key={c} className="status-badge triage">{c}</span>
@@ -51,8 +51,8 @@ export function PatientDetail({ patient, visits }: PatientDetailProps) {
       </div>
 
       <div className="recent-visits-section" style={{ marginTop: '3rem' }}>
-        <h2>Clinical Timeline</h2>
-        <div className="timeline">
+        <h2 style={{ padding: '1.5rem' }}>Clinical Timeline</h2>
+        <div className="timeline" style={{ padding: '0 1.5rem 1.5rem' }}>
           {visits.map((v) => {
             const diags = JSON.parse(v.diagnoses || '[]');
             const prescriptions = JSON.parse(v.prescriptions || '[]');
@@ -75,16 +75,16 @@ export function PatientDetail({ patient, visits }: PatientDetailProps) {
                   backgroundColor: '#ccc'
                 }}></div>
                 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div>
-                    <span style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <div style={{ fontWeight: 'bold' }}>
                       Visit {v.visitId.slice(0, 8)}
-                    </span>
-                    <span style={{ marginLeft: '1rem', color: '#666' }}>
-                      {new Date(v.createdAt).toLocaleString()}
-                    </span>
+                    </div>
+                    <span className={`status-badge ${v.state.toLowerCase()}`}>{v.state}</span>
                   </div>
-                  <span className={`status-badge ${v.state.toLowerCase()}`}>{v.state}</span>
+                  <div style={{ fontSize: '0.875rem', color: '#666' }}>
+                    {new Date(v.createdAt).toLocaleString()}
+                  </div>
                 </div>
 
                 <div style={{ marginTop: '1rem' }}>
@@ -93,10 +93,10 @@ export function PatientDetail({ patient, visits }: PatientDetailProps) {
                   {diags.length > 0 && (
                     <div style={{ marginTop: '0.5rem' }}>
                       <strong>Diagnoses:</strong>
-                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.25rem' }}>
                         {diags.map((d: any) => (
                           <span key={d.ailment_code} className="status-badge diagnosed" title={`Confidence: ${d.confidence}`}>
-                            {d.ailment_name} ({d.ailment_code})
+                            {d.ailment_name}
                           </span>
                         ))}
                       </div>
@@ -108,7 +108,7 @@ export function PatientDetail({ patient, visits }: PatientDetailProps) {
                       <strong>Prescriptions:</strong>
                       {prescriptions.map((rx: any) => (
                         <div key={rx.treatment_code} style={{ marginTop: '0.5rem' }}>
-                          <p><strong>{rx.treatment_name} ({rx.treatment_code}):</strong> {rx.rationale}</p>
+                          <p><strong>{rx.treatment_name}:</strong> {rx.rationale}</p>
                         </div>
                       ))}
                     </div>
@@ -128,7 +128,7 @@ export function PatientDetail({ patient, visits }: PatientDetailProps) {
               </div>
             );
           })}
-          {visits.length === 0 && <p>No visit history found for this patient.</p>}
+          {visits.length === 0 && <p>No visit history found.</p>}
         </div>
       </div>
     </Layout>

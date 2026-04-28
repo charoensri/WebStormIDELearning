@@ -13,33 +13,35 @@ export function AilmentList({ ailments }: AilmentListProps) {
       </div>
 
       <div className="recent-visits-section">
-        <table className="visit-table">
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Ailment Name</th>
-              <th>Category</th>
-              <th>Description</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ailments.map((a) => (
-              <tr key={a.ailmentCode}>
-                <td><code style={{ fontSize: '1rem', color: '#d63384' }}>{a.ailmentCode}</code></td>
-                <td><strong>{a.ailmentName}</strong></td>
-                <td>{a.category}</td>
-                <td style={{ maxWidth: '400px' }}>{a.description}</td>
-                <td><span className={`status-badge ${a.status}`}>{a.status}</span></td>
-              </tr>
-            ))}
-            {ailments.length === 0 && (
+        <div className="table-container">
+          <table className="visit-table">
+            <thead>
               <tr>
-                <td colSpan={5} style={{ textAlign: 'center' }}>No ailments in catalog.</td>
+                <th>Code</th>
+                <th>Ailment Name</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Status</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {ailments.map((a) => (
+                <tr key={a.ailmentCode}>
+                  <td><code style={{ fontSize: '1rem', color: '#d63384' }}>{a.ailmentCode}</code></td>
+                  <td><strong>{a.ailmentName}</strong></td>
+                  <td>{a.category}</td>
+                  <td style={{ maxWidth: '400px' }}>{a.description}</td>
+                  <td><span className={`status-badge ${a.status}`}>{a.status}</span></td>
+                </tr>
+              ))}
+              {ailments.length === 0 && (
+                <tr>
+                  <td colSpan={5} style={{ textAlign: 'center' }}>No ailments in catalog.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div style={{ marginTop: '3rem', padding: '2rem', backgroundColor: '#f0f4f8', borderRadius: '8px' }}>

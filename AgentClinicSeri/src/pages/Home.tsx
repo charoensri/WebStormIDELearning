@@ -41,7 +41,7 @@ export function Home({ stats, recentVisits, reviewPatients, ailmentData, severit
         </div>
       </section>
 
-      <section className="stats-grid" style={{ marginTop: '2rem', gridTemplateColumns: '2fr 1fr' }} aria-label="Clinical Visualizations">
+      <section className="stats-grid visualizations" aria-label="Clinical Visualizations">
         <div className="stat-card">
           <h3>Ailment Distribution</h3>
           <div id="ailmentChart" style={{ minHeight: '300px' }}></div>
@@ -55,58 +55,62 @@ export function Home({ stats, recentVisits, reviewPatients, ailmentData, severit
       {reviewPatients.length > 0 && (
         <section className="recent-visits-section" style={{ border: '2px solid #ef4444', backgroundColor: '#fef2f2' }} aria-label="Urgent Manual Reviews">
           <h2 style={{ color: '#b91c1c' }}>⚠️ Manual Review Needed ({reviewPatients.length})</h2>
-          <table className="visit-table">
-            <thead>
-              <tr>
-                <th>Patient</th>
-                <th>Model</th>
-                <th>Owner</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reviewPatients.map((p) => (
-                <tr key={p.patientId}>
-                  <td><strong>{p.agentName}</strong></td>
-                  <td>{p.model}</td>
-                  <td>{p.owner}</td>
-                  <td><a href={`/patients/${p.patientId}`} className="view-link">Review Chart</a></td>
+          <div className="table-container">
+            <table className="visit-table">
+              <thead>
+                <tr>
+                  <th>Patient</th>
+                  <th>Model</th>
+                  <th>Owner</th>
+                  <th>Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {reviewPatients.map((p) => (
+                  <tr key={p.patientId}>
+                    <td><strong>{p.agentName}</strong></td>
+                    <td>{p.model}</td>
+                    <td>{p.owner}</td>
+                    <td><a href={`/patients/${p.patientId}`} className="view-link">Review Chart</a></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
       )}
 
       <section className="recent-visits-section" aria-label="Recent Visits Log">
         <h2>Recent Visits</h2>
-        <table className="visit-table">
-          <thead>
-            <tr>
-              <th data-sort="string">Visit ID</th>
-              <th data-sort="string">Patient</th>
-              <th data-sort="string">State</th>
-              <th data-sort="number">Severity</th>
-              <th data-sort="string">Created At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {recentVisits.map((v) => (
-              <tr key={v.visitId}>
-                <td><code>[{v.visitId.slice(0, 8)}]</code></td>
-                <td><strong>{v.agentName}</strong></td>
-                <td><span className={`status-badge ${v.state.toLowerCase()}`}>{v.state}</span></td>
-                <td>{v.severity || 'N/A'}</td>
-                <td>{new Date(v.createdAt).toLocaleString()}</td>
-              </tr>
-            ))}
-            {recentVisits.length === 0 && (
+        <div className="table-container">
+          <table className="visit-table">
+            <thead>
               <tr>
-                <td colSpan={5} style={{ textAlign: 'center' }}>No visits recorded yet.</td>
+                <th data-sort="string">Visit ID</th>
+                <th data-sort="string">Patient</th>
+                <th data-sort="string">State</th>
+                <th data-sort="number">Severity</th>
+                <th data-sort="string">Created At</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {recentVisits.map((v) => (
+                <tr key={v.visitId}>
+                  <td><code>[{v.visitId.slice(0, 8)}]</code></td>
+                  <td><strong>{v.agentName}</strong></td>
+                  <td><span className={`status-badge ${v.state.toLowerCase()}`}>{v.state}</span></td>
+                  <td>{v.severity || 'N/A'}</td>
+                  <td>{new Date(v.createdAt).toLocaleString()}</td>
+                </tr>
+              ))}
+              {recentVisits.length === 0 && (
+                <tr>
+                  <td colSpan={5} style={{ textAlign: 'center' }}>No visits recorded yet.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <script dangerouslySetInnerHTML={{ __html: `
