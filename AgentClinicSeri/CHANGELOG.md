@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-05-06
+### Added
+- **Finalized Phase 13 (Testing Suite):** Established a unified testing runner with Vitest for unit/integration tests and Playwright for E2E workflows.
+- **Finalized Phase 12 (Component Architecture):** Modularized the layout into separate `Header`, `Footer`, and `Main` components.
+
+### Fixed
+- **CSS Cleanup:** Removed syntax artifacts and fixed dangling mobile navigation rules in `static/style.css`.
+- **Git State:** Synchronized local architectural changes with the remote repository.
+
 ## 2026-04-30
 ### Added
 - **Tabular Data Enhancement:** Implemented filtering and pagination across all major list pages (Patients, Ailments, Therapies, and Visits).
