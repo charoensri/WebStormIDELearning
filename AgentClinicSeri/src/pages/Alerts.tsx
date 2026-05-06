@@ -22,8 +22,8 @@ export function Alerts({ referrals, chronicPatients }: AlertsProps) {
               <tr>
                 <th>Patient</th>
                 <th>Ailment</th>
-                <th>Reason</th>
-                <th>Recommendation</th>
+                <th className="mobile-hide">Reason</th>
+                <th className="mobile-hide">Recommendation</th>
                 <th>Date</th>
                 <th>Action</th>
               </tr>
@@ -33,8 +33,8 @@ export function Alerts({ referrals, chronicPatients }: AlertsProps) {
                 <tr key={i}>
                   <td><strong>{r.agentName}</strong></td>
                   <td><span className="status-badge triage">{r.ailmentCode}</span></td>
-                  <td style={{ maxWidth: '300px' }}>{r.reason}</td>
-                  <td style={{ maxWidth: '300px', fontStyle: 'italic' }}>{r.recommendation}</td>
+                  <td className="mobile-hide" style={{ maxWidth: '300px' }}>{r.reason}</td>
+                  <td className="mobile-hide" style={{ maxWidth: '300px', fontStyle: 'italic' }}>{r.recommendation}</td>
                   <td>{new Date(r.date).toLocaleDateString()}</td>
                   <td><a href={`/patients/${r.patientId}`} className="view-link">Investigate</a></td>
                 </tr>

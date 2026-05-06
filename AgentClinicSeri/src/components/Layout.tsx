@@ -1,4 +1,7 @@
 import { Child } from 'hono/jsx'
+import { Header } from './Header'
+import { Footer } from './Footer'
+import { Main } from './Main'
 
 type Props = {
   title: string
@@ -25,39 +28,23 @@ export function Layout({ title, children }: Props) {
         ` }} />
       </head>
       <body>
-        <header>
-          <div className="header-container">
-            <div className="brand">
-              <h1>AgentClinic</h1>
-              <p className="slogan">Wellness for AI</p>
-            </div>
-            <button id="menuToggle" aria-label="Toggle Menu" className="menu-toggle">
-              <span></span>
-              <span></span>
-              <span></span>
-            </button>
-            <nav id="mainNav">
-              <a href="/">Dashboard</a>
-              <a href="/patients">Patients</a>
-              <a href="/ailments">Ailments</a>
-              <a href="/therapies">Therapies</a>
-              <a href="/analytics">Analytics</a>
-              <a href="/alerts">Alerts</a>
-            </nav>
-          </div>
-        </header>
-        <main>
+        <Header />
+        <Main>
           {children}
-        </main>
+        </Main>
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-        <footer style={{ marginTop: 'auto' }}>
-          <p>&copy; 2026 AgentClinic — Verified: 2026-04-27</p>
-        </footer>
+        <Footer />
         <script dangerouslySetInnerHTML={{ __html: `
           // Mobile Menu Toggle
-          document.getElementById('menuToggle').addEventListener('click', function() {
-            document.getElementById('mainNav').classList.toggle('active');
-            this.classList.toggle('open');
+          document.addEventListener('DOMContentLoaded', () => {
+            const menuToggle = document.getElementById('menuToggle');
+            const mainNav = document.getElementById('mainNav');
+            if (menuToggle && mainNav) {
+              menuToggle.addEventListener('click', function() {
+                mainNav.classList.toggle('active');
+                this.classList.toggle('open');
+              });
+            }
           });
 
           // Table Sorting

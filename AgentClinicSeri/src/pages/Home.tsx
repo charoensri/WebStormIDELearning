@@ -18,9 +18,9 @@ interface HomeProps {
 export function Home({ stats, recentVisits, reviewPatients, ailmentData, severityData }: HomeProps) {
   return (
     <Layout title="Dashboard">
-      <header className="dashboard-header">
+      <div className="dashboard-header">
         <h1>Clinic Overview</h1>
-      </header>
+      </div>
 
       <section className="stats-grid" aria-label="Key Statistics">
         <div className="stat-card">
@@ -52,7 +52,7 @@ export function Home({ stats, recentVisits, reviewPatients, ailmentData, severit
         </div>
       </section>
 
-      {reviewPatients.length > 0 && (
+      {reviewPatients.length > 0 ? (
         <section className="recent-visits-section" style={{ border: '2px solid #ef4444', backgroundColor: '#fef2f2' }} aria-label="Urgent Manual Reviews">
           <h2 style={{ color: '#b91c1c' }}>⚠️ Manual Review Needed ({reviewPatients.length})</h2>
           <div className="table-container">
@@ -78,7 +78,7 @@ export function Home({ stats, recentVisits, reviewPatients, ailmentData, severit
             </table>
           </div>
         </section>
-      )}
+      ) : ''}
 
       <section className="recent-visits-section" aria-label="Recent Visits Log">
         <h2>Recent Visits</h2>
@@ -86,20 +86,20 @@ export function Home({ stats, recentVisits, reviewPatients, ailmentData, severit
           <table className="visit-table">
             <thead>
               <tr>
-                <th data-sort="string">Visit ID</th>
+                <th data-sort="string" className="mobile-hide">Visit ID</th>
                 <th data-sort="string">Patient</th>
                 <th data-sort="string">State</th>
-                <th data-sort="number">Severity</th>
+                <th data-sort="number" className="mobile-hide">Severity</th>
                 <th data-sort="string">Created At</th>
               </tr>
             </thead>
             <tbody>
               {recentVisits.map((v) => (
                 <tr key={v.visitId}>
-                  <td><code>[{v.visitId.slice(0, 8)}]</code></td>
+                  <td className="mobile-hide"><code>[{v.visitId.slice(0, 8)}]</code></td>
                   <td><strong>{v.agentName}</strong></td>
                   <td><span className={`status-badge ${v.state.toLowerCase()}`}>{v.state}</span></td>
-                  <td>{v.severity || 'N/A'}</td>
+                  <td className="mobile-hide">{v.severity || 'N/A'}</td>
                   <td>{new Date(v.createdAt).toLocaleString()}</td>
                 </tr>
               ))}

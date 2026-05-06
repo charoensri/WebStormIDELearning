@@ -1,3 +1,4 @@
+
 # Roadmap
 
 Phases are intentionally small — each one is a shippable slice of work, independently reviewable and testable.
@@ -55,11 +56,23 @@ Phases are intentionally small — each one is a shippable slice of work, indepe
 - [ ] Input sanitization on all forms
 - [ ] Basic logging middleware
 
-## Phase 11 — Mobile-First UX
-- [ ] Responsive navigation (hamburger menu or bottom bar)
-- [ ] Touch-friendly action targets (min 44px)
-- [ ] Optimized data density for small screens (card-based lists)
-- [ ] Viewport-specific layouts for complex analytics charts
+## Phase 11 — Mobile-First UX [DONE]
+- [x] Responsive navigation (hamburger menu)
+- [x] Scrollable table containers
+- [x] Touch-friendly action targets (min 44px)
+- [x] Optimized data density for small screens
+- [x] Viewport-specific layouts for complex analytics charts
+
+## Phase 12 — Component Architecture [DONE]
+- [x] Refactor `Layout.tsx` to extract `Header`, `Footer`, and `Main` into standalone components
+- [x] Ensure consistent prop passing and type safety for new components
+- [x] Maintain all existing JS logic (mobile menu, sorting) during the split
+
+## Phase 13 — Comprehensive Testing Suite [DONE]
+- [x] Implement unit tests for clinical engine logic (triage, diagnosis)
+- [x] Expand integration tests for API endpoints
+- [x] Add E2E tests for critical user flows (registration, booking, analytics)
+- [x] Set up a unified test runner and CI configuration
 
 ---
 

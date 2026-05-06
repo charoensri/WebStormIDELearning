@@ -191,6 +191,23 @@ footer {
   white-space: nowrap;
 }
 
+/* Utility & Touch Targets */
+.view-link, .btn {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.75rem 0;
+  display: inline-block;
+  min-height: 44px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}
+
+.view-link:hover, .btn:hover {
+  text-decoration: underline;
+}
+
 /* Media Queries */
 .stats-grid.visualizations {
   grid-template-columns: 2fr 1fr;
@@ -212,17 +229,38 @@ footer {
     top: 0;
     right: 0;
     height: 100vh;
-    width: 70%;
+    width: 280px; /* Fixed width for better control */
+    max-width: 80%;
     background: white;
     flex-direction: column;
-    padding: 5rem 2rem;
+    padding: 5rem 1.5rem;
     transform: translateX(100%);
-    transition: transform 0.3s ease-in-out;
-    box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -4px 0 15px rgba(0,0,0,0.1);
+    visibility: hidden; /* Prevent focus on hidden menu */
   }
 
   nav.active {
     transform: translateX(0);
+    visibility: visible;
+  }
+
+  nav a {
+    padding: 1rem 0;
+    font-size: 1.125rem;
+    border-bottom: 1px solid var(--color-border);
+    width: 100%;
+  }
+
+  /* Utility & Touch Targets */
+  .mobile-hide {
+    display: table-cell;
+  }
+
+  @media (max-width: 640px) {
+    .mobile-hide {
+      display: none !important;
+    }
   }
 
   .menu-toggle.open span:nth-child(1) { transform: rotate(45deg); }
@@ -233,12 +271,22 @@ footer {
     font-size: 1.25rem;
   }
 
+  .stat-card {
+    padding: 1rem;
+  }
+
   .stat-value {
     font-size: 1.5rem;
   }
   
   .stats-grid {
     grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .recent-visits-section h2 {
+    padding: 1rem;
+    font-size: 1rem;
   }
 }
 
@@ -246,13 +294,4 @@ footer {
   .stats-grid {
     grid-template-columns: 1fr;
   }
-}
-
-/* Utility */
-.view-link {
-  color: var(--color-primary);
-  text-decoration: none;
-  font-weight: 600;
-  padding: 0.5rem 0; /* Larger touch target */
-  display: inline-block;
 }

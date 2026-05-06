@@ -5,7 +5,7 @@ interface ReviewQueueItem {
   ailmentCode: string;
   ailmentName: string;
   category: string;
-  status: string;
+  status: string | null;
 }
 
 interface EffectivenessItem {
@@ -70,24 +70,37 @@ export function Analytics({ heatmapData, ailmentNames, trendData, effectivenessD
                   </td>
                   <td>{a.category}</td>
                   <td><span className={`status-badge ${a.status}`}>{a.status}</span></td>
-                  <td>
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                      <button 
-                        className="view-link" 
-                        style={{ border: 'none', background: 'none', cursor: 'pointer' }}
-                        onClick={() => (window as any).verifyAilment(a.ailmentCode)}
-                      >
-                        Verify
-                      </button>
-                      <button 
-                        className="view-link" 
-                        style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#666' }}
-                        onClick={() => (window as any).updateAilmentName(a.ailmentCode)}
-                      >
-                        Rename
-                      </button>
-                    </div>
-                  </td>
+                <td>
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                    <button 
+                      className="btn" 
+                      onClick={() => (window as any).verifyAilment(a.ailmentCode)}
+                    >
+                      Verify
+                    </button>
+                    <button 
+                      className="btn" 
+                      style={{ color: '#666' }}
+                      onClick={() => (window as any).updateAilmentName(a.ailmentCode)}
+                    >
+                      Rename
+                    </button>
+                    <button 
+                      className="btn" 
+                      style={{ color: '#f59e0b' }}
+                      onClick={() => (window as any).mergeAilment(a.ailmentCode)}
+                    >
+                      Merge
+                    </button>
+                    <button 
+                      className="btn" 
+                      style={{ color: '#ef4444' }}
+                      onClick={() => (window as any).dismissAilment(a.ailmentCode)}
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                </td>
                 </tr>
               ))}
               {reviewQueue.length === 0 && (
